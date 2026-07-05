@@ -1,0 +1,95 @@
+comfyui:
+  # Must be reachable from inside the proxy container.
+  # If the proxy and ComfyUI are both on ai_net and the ComfyUI service/alias is "comfyui",
+  # this is correct.
+  base_url: "http://um:8188"
+
+  # Timeout for individual ComfyUI HTTP requests.
+  timeout_seconds: 180
+
+  # How often the proxy checks ComfyUI generation status.
+  poll_interval_seconds: 1
+
+  # Max time to wait for ComfyUI to finish a generation.
+  output_timeout_seconds: 180
+
+workflow:
+  # This is mounted read-only from ./config into /config.
+  file: "/config/imagegen_z_image_turbo.json"
+
+response:
+  # Return PNG base64 to the A1111-compatible caller.
+  image_format: "png"
+
+mappings:
+  # A1111 payload field: prompt
+  # ComfyUI node: 57:27 CLIPTextEncode
+  prompt:
+    node: "57:27"
+    path: "inputs.text"
+    default: ""
+
+  # Your workflow does not have a real negative text prompt.
+  # The negative path is ConditioningZeroOut, so we deliberately do not map negative_prompt.
+  #
+  # If you later add a second CLIPTextEncode for negative prompt, add:
+  #
+  # negative_prompt:
+  #   node: "<negative_prompt_node_id>"
+  #   path: "inputs.text"
+  #   default: ""
+
+  # A1111 payload field: width
+  # ComfyUI node: 57:13 EmptySD3LatentImage
+  width:
+    node: "57:13"
+    path: "inputs.width"
+    default: 1024
+
+  # A1111 payload field: height
+  # ComfyUI node: 57:13 EmptySD3LatentImage
+  height:
+    node: "57:13"
+    path: "inputs.height"
+    default: 1024
+
+  # A1111 payload field: steps
+  # ComfyUI node: 57:3 KSampler
+  steps:
+    node: "57:3"
+    path: "inputs.steps"
+    default: 8
+
+  # A1111 payload field: cfg_scale
+  # ComfyUI node: 57:3 KSampler
+  # Z-Image-Turbo usually wants low CFG. Your workflow uses cfg=1.
+  cfg_scale:
+    node: "57:3"
+    path: "inputs.cfg"
+    default: 1.0
+
+  # A1111 payload field: seed
+  # ComfyUI node: 57:3 KSampler
+  # A1111 uses -1 for random seed. The proxy should convert negative seed to random.
+  seed:
+    node: "57:3"
+    path: "inputs.seed"
+    default: -1
+    randomize_if_negative: true
+
+  # A1111 payload field: sampler_name
+  # ComfyUI node: 57:3 KSampler
+  # Your workflow uses res_multistep. MCPO may send "Euler a", but the proxy can normalize it
+  # or this default can preserve your workflow value when the request omits it.
+  sampler_name:
+    node: "57:3"
+    path: "inputs.sampler_name"
+    default: "res_multistep"
+
+  # A1111 payload field: scheduler
+  # ComfyUI node: 57:3 KSampler
+  # Your workflow uses simple. MCPO currently sends Karras unless overridden.
+  scheduler:
+    node: "57:3"
+    path: "inputs.scheduler"
+    default: "simple"

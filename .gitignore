@@ -1,0 +1,29 @@
+# Local-only env files
+.env
+.env.*
+!.env.example
+
+# Runtime state
+data/*
+**/data/*
+!data/.gitkeep # Keep empty data folder
+
+# Secrets (non-swarm)
+secrets/*
+**/secrets/*
+!secrets/.gitkeep # Keep empty secrets folder
+
+# Editor/OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+tmp/
+
+# Backups
+backups/*
+**/backups/*
+!backups/.gitkeep # Keep empty backups folder

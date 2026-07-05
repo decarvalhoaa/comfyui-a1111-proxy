@@ -1,0 +1,19 @@
+services:
+  comfyui-a1111-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: comfyui-a1111-proxy
+    restart: unless-stopped
+    networks:
+      - ai_net
+    ports:
+      - 7860:7860
+    environment:
+      CONFIG_FILE: /config/mapping.yaml
+    volumes:
+      - ./config:/config:ro
+
+networks:
+  ai_net:
+    external: true
