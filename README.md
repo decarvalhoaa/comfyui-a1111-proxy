@@ -68,7 +68,7 @@ It accepts a small subset of the A1111 `txt2img` request format, maps values int
 The proxy reads two external files:
 
 ```text
-/config/workflow.json
+/config/workflow.json   # e.g. current workflow: imagegen_z_image_turbo.json
 /config/mapping.yaml
 ```
 
