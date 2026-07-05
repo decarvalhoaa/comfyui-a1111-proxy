@@ -70,7 +70,7 @@ if [[ -z "$IMAGE_TAG" ]]; then
 fi
 
 BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-if VCS_REF="$(git rev-parse --short HEAD 2>/dev/null)"; then
+if VCS_REF="$(git rev-parse --short HEAD 2>/dev/null | tr -d '\r\n')"; then
   :
 else
   VCS_REF="unknown"
